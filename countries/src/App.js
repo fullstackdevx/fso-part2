@@ -3,7 +3,18 @@ import axios from 'axios'
 
 const States = ({ states }) => states.map(state => <State key={state.name} state={state} />)
 
-const State = ({ state }) => <p>{state.name}</p>
+const State = ({ state }) => {
+  const [showDetail, setShowDetail] = useState(false)
+
+  return (
+    <div>
+      {state.name}
+      <button onClick={() => setShowDetail(!showDetail)}>
+        {showDetail && "not"} show
+      </button>
+      {showDetail && <DetailedState state={state} />}
+    </div>)
+}
 
 const DetailedState = ({ state }) => {
   return (
@@ -49,7 +60,13 @@ function App() {
       <div>
         find countries <input value={stateFilter} onChange={handleFilterChange} />
       </div>
-      {statesToShow.length === 1 ? <DetailedState state={statesToShow[0]} /> : (statesToShow.length <= 10 ? <States states={statesToShow} /> : 'Too many matches, specify another filter')}
+      {statesToShow.length === 1
+        ? <DetailedState state={statesToShow[0]} />
+        : (
+          statesToShow.length <= 10
+            ? <States states={statesToShow} />
+            : 'Too many matches, specify another filter'
+        )}
     </>
   );
 }
