@@ -36,6 +36,30 @@ const Languages = ({ languages }) => {
     </ul>)
 }
 
+const WeatherInfo = ({ capital }) => {
+  const [weather, setWeather] = useState({})
+
+  useEffect(() => {
+    axios
+      .get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
+      .then((response) => {
+        setWeather(response.data)
+      })
+  }, [capital])
+
+  return (
+    <>
+      <h2>Weather in {capital}</h2>
+      {Object.keys(weather).length !== 0 && (
+        <>
+          <p><strong>temperature: </strong>{weather.current.temperature} Celsius</p>
+          <img src={weather.current.weather_icons[0]} alt={`current weather in ${capital}`} />
+          <p><strong>wind: </strong>{weather.current.wind_speed} Kilometers/Hour direction {weather.current.wind_dir}</p>
+        </>)}
+    </>
+  )
+}
+
 
 function App() {
   const [states, setStates] = useState([])
@@ -61,7 +85,11 @@ function App() {
         find countries <input value={stateFilter} onChange={handleFilterChange} />
       </div>
       {statesToShow.length === 1
-        ? <DetailedState state={statesToShow[0]} />
+        ? (
+          <>
+            <DetailedState state={statesToShow[0]} />
+            <WeatherInfo capital={statesToShow[0].capital} />
+          </>)
         : (
           statesToShow.length <= 10
             ? <States states={statesToShow} />
