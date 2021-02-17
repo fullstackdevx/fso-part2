@@ -43,7 +43,15 @@ const WeatherInfo = ({ capital }) => {
     axios
       .get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
       .then((response) => {
-        setWeather(response.data)
+        const { data } = response
+        if (Object.keys(data).includes("success")) {
+          console.log(`Error in the response of the API: ${data.error.info}`)
+        } else {
+          setWeather(response.data)
+        }
+      })
+      .catch((error) => {
+        console.log('Error obtaining the weather from the API')
       })
   }, [capital])
 
