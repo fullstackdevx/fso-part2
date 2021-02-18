@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const Filter = ({ value, handleChange }) => <div>filter shown with <input value={value} onChange={handleChange} /></div>
 
@@ -26,6 +27,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [nameFilter, setNameFilter] = useState('')
+  const [successfulMessage, setSuccessfulMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -67,6 +69,11 @@ const App = () => {
 
           setNewName('')
           setNewNumber('')
+
+          setSuccessfulMessage(`Added ${returnedPerson.name}`)
+          setTimeout(() => {
+            setSuccessfulMessage(null)
+          }, 3000)
         })
     }
   }
@@ -101,6 +108,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successfulMessage} />
       <Filter value={nameFilter} handleChange={handleNameFilterChange} />
       <h3>add a new</h3>
       <PersonForm newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} handleSubmit={addName} />
