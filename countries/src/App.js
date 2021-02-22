@@ -40,8 +40,12 @@ const WeatherInfo = ({ capital }) => {
   const [weather, setWeather] = useState({})
 
   useEffect(() => {
+    // Thanks to: https://medium.com/@selvaganesh93/how-to-clean-up-subscriptions-in-react-components-using-abortcontroller-72335f19b6f7 
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+
     axios
-      .get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
+      .get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`, { cancelToken: source.token })
       .then((response) => {
         const { data } = response
         if (Object.keys(data).includes("success")) {
@@ -51,8 +55,16 @@ const WeatherInfo = ({ capital }) => {
         }
       })
       .catch((error) => {
-        console.log('Error obtaining the weather from the API')
+        if (axios.isCancel(error)) {
+          console.log("cancelled");
+        } else {
+          console.log('Error obtaining the weather from the API')
+        }
       })
+
+    return () => {
+      source.cancel();
+    };
   }, [capital])
 
   return (
